@@ -24,24 +24,31 @@ pdb = app.PDBFile('ejm_54.pdb')
 prmtop = app.AmberPrmtopFile('ejm_54.prm7')
 inpcrd = app.AmberInpcrdFile('ejm_54.rst7')
 
-
+# define the ML region
 ml_atoms = [idx for idx in range(4657, 4693)]
-print(ml_atoms)
+
+3 set simulation parameters
 temp = 300 
 dt = 0.0005  
 step = 100_000 
 
-potential = MLPotential('ani2x')
+# intialize the MM system
 mm_system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometer,
                              constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
 
 
+# intialize the potential and set up the mixed system
+potential = MLPotential('ani2x')
 system = potential.createMixedSystem(prmtop.topology, mm_system, ml_atoms)
 
 integrator = VerletIntegrator(dt * unit.picoseconds)
-#platform = Platform.getPlatformByName("CUDA")
-#prop = dict(CudaPrecision="mixed")
-simulation = Simulation(prmtop.topology, system, integrator)#, platform, prop)
+
+# GPU specific parameters
+platform = Platform.getPlatformByName("CUDA")
+prop = dict(CudaPrecision="mixed")
+
+# set up simulation and set position/velocities
+simulation = Simulation(prmtop.topology, system, integrator, platform, prop)
 simulation.context.setPositions(inpcrd.positions)
 simulation.context.setVelocitiesToTemperature(temp * unit.kelvin)
 
@@ -49,10 +56,11 @@ simulation.context.setVelocitiesToTemperature(temp * unit.kelvin)
 print("\nInitial system energy")
 print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
 
-simulation.reporters.append(DCDReporter(f'ani2x_waterbox_simulation.dcd', 50, enforcePeriodicBox=True))
+# add reporters
+simulation.reporters.append(DCDReporter(f'protein_ligand_simulation.dcd', 50, enforcePeriodicBox=True))
 simulation.reporters.append(
     StateDataReporter(
-        f'ani2x_waterbox_simulation.csv',
+        f'protein_ligand_simulation.csv',
         reportInterval=50,
         step=True,
         time=True,
@@ -65,6 +73,7 @@ simulation.reporters.append(
     )
 )
 
+# run simulation
 if step > 0:
     print("\nMD run: %s steps" % step)
     simulation.step(step)
