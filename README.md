@@ -19,7 +19,7 @@ mamba install nnpops -c conda-forge
 ## Examples
 
 
-- examples/waterbox contains simulation setup for a ~1K atom pure water simulation. Simulations are performed either with ANI2x or MACE.
+- examples/waterbox contains simulation setup for a ~1K atom pure water simulation with periodic boundary conditions. Simulations are performed either with ANI2x or MACE.
 
-- examples/protein_ligand contains a solvated protein-ligand simulation in which the ligand is treated with a NNP and the protein&water is treated with a classical force field.
+- examples/protein_ligand contains a solvated protein-ligand simulation with periodic boundary conditions in which the ligand is treated with a NNP and the protein&water is treated with a classical force field.
 
