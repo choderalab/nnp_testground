@@ -16,7 +16,7 @@ mamba install nnpops -c conda-forge
 ```
 
 
-## Systems
+## Examples
 
 
 - examples/waterbox contains simulation setup for a ~1K atom pure water simulation. Simulations are performed either with ANI2x or MACE.
