@@ -1,5 +1,20 @@
 # nnp_testground
 
+## How to run these examples
+
+To use the newest `openmm-ml` version it is necessary to install from github. The following should set up a sufficient conda environment and installs both `nnpops` and `mace`.
+
+```
+conda create --name test_env python=3.11
+conda activate test_env
+conda install openmm 
+conda install openmm-ml
+conda remove --force openmm-ml
+pip install git+https://github.com/openmm/openmm-ml.git  
+pip install mace-torch
+mamba install nnpops -c conda-forge
+```
+
 
 ## Systems
 
