@@ -12,25 +12,37 @@ from openmm import (
     Platform,
 )
 from openmmml import MLPotential
+from openmm import app
 import torch
-
+from openmm import unit
 torch._C._jit_set_nvfuser_enabled(False)
 
-psf=CharmmPsfFile("tip125.psf")
-crd=CharmmCrdFile("tip125_cptequil.crd")
-atoms = [idx for idx in range(4657, 4693)]
-print()
+# Load the PDB file
+pdb = app.PDBFile('ejm_54.pdb')
+
+# Load the AMBER parameter and coordinate files
+prmtop = app.AmberPrmtopFile('ejm_54.prm7')
+inpcrd = app.AmberInpcrdFile('ejm_54.rst7')
+
+
+ml_atoms = [idx for idx in range(4657, 4693)]
+print(ml_atoms)
 temp = 300 
 dt = 0.0005  
 step = 100_000 
 
 potential = MLPotential('ani2x')
-system = potential.createMixedSystem(psf.topology)
+mm_system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometer,
+                             constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
+
+
+system = potential.createMixedSystem(prmtop.topology, mm_system, ml_atoms)
+
 integrator = VerletIntegrator(dt * unit.picoseconds)
-platform = Platform.getPlatformByName("CUDA")
-prop = dict(CudaPrecision="mixed")
-simulation = Simulation(psf.topology, system, integrator, platform, prop)
-simulation.context.setPositions(crd.positions)
+#platform = Platform.getPlatformByName("CUDA")
+#prop = dict(CudaPrecision="mixed")
+simulation = Simulation(prmtop.topology, system, integrator)#, platform, prop)
+simulation.context.setPositions(inpcrd.positions)
 simulation.context.setVelocitiesToTemperature(temp * unit.kelvin)
 
 # # Calculate initial system energy
