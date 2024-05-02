@@ -49,10 +49,10 @@ simulation.context.setVelocitiesToTemperature(temp * unit.kelvin)
 print("\nInitial system energy")
 print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
 
-simulation.reporters.append(DCDReporter(f'ani2x_waterbox_simulation.dcd', 50, enforcePeriodicBox=True))
+simulation.reporters.append(DCDReporter(f'ani2x_simulation.dcd', 50, enforcePeriodicBox=True))
 simulation.reporters.append(
     StateDataReporter(
-        f'ani2x_waterbox_simulation.csv',
+        f'ani2x_simulation.csv',
         reportInterval=50,
         step=True,
         time=True,
