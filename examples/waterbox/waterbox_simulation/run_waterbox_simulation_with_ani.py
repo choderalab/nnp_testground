@@ -16,13 +16,16 @@ import torch
 
 torch._C._jit_set_nvfuser_enabled(False)
 
+# read in topology and coordinates
 psf=CharmmPsfFile("tip125.psf")
 crd=CharmmCrdFile("tip125_cptequil.crd")
 
+# system specific parameters
 temp = 300 
 dt = 0.0005  
 step = 100_000 
 
+# set up box, potential and simulation object
 box_size = 15.5554 #smaller box size for 125 water molecules
 psf.setBox(box_size * unit.angstrom, box_size * unit.angstrom, box_size * unit.angstrom)
 potential = MLPotential('ani2x')
